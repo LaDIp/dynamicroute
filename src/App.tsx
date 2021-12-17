@@ -1,26 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import {
+  BrowserRouter as Router,
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router-dom'
+import Card from './components/Card'
+import Tree from './helper/Tree'
+import { useAppSelector } from './hooks'
+import './global.scss'
 
 function App() {
+  const routeTree = useAppSelector((state) => state)
+  const tree = new Tree(routeTree)
+  const routes = tree.setRoutes()
+  console.log(routes)
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <Router>
+        <Routes>
+          <Route path='/' element={<Navigate replace to='/main' />} />
+          <Route path={routeTree.route} element={<Card {...routeTree} />} />
+          {routes.map(({ path, node }) => (
+            <Route key={path} path={path} element={<Card {...node} />} />
+          ))}
+          <Route path='*' element={<h1>404 Not Found</h1>} />
+        </Routes>
+      </Router>
+    </>
+  )
 }
 
-export default App;
+export default App
